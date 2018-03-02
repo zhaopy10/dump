@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <sys/syscall.h>
 #include "common.h"
 
 
@@ -44,7 +44,7 @@ struct state *state_init(struct state *s) {
 static void thread_loop(void *userdata)
 {
 	struct state *state = userdata;
-
+    int loop = 0;
 	while (1) {
 		/* Blocking recv. */
 		int r = recvmmsg(state->fd, &state->messages[0], MAX_MSG, MSG_WAITFORONE, NULL);
@@ -66,6 +66,14 @@ static void thread_loop(void *userdata)
 		}
 		__atomic_fetch_add(&state->pps, r, 0);
 		__atomic_fetch_add(&state->bps, bytes, 0);
+
+        loop++;
+        if(loop == 1e6)
+        {
+            pid_t tid = syscall(SYS_gettid);
+            printf("thread %d get 1M packages\n", tid);
+            loop = 0;
+        }
 	}
 }
 

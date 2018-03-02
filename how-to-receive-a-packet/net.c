@@ -141,14 +141,14 @@ int net_bind_udp(struct net_addr *shost, int reuseport, int busy_poll)
 	if (sd < 0) {
 		PFATAL("socket()");
 	}
-
+/*
 	int one = 1;
 	int r = setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, (char *)&one,
 			   sizeof(one));
 	if (r < 0) {
 		PFATAL("setsockopt(SO_REUSEADDR)");
 	}
-
+*/
 	if (reuseport) {
 		one = 1;
 		r = setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, (char *)&one,
